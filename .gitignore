@@ -1,0 +1,11 @@
+data/
+Potsdam/
+output/
+__pycache__/
+.idea/
+.vscode/
+*.pth
+*.zip
+*.rar
+*.tif
+*.tiff
