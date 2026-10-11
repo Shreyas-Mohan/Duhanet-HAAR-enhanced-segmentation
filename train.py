@@ -187,7 +187,7 @@ def main():
 
     if opt.resume and os.path.exists(opt.resume):
         print(f"\n🔄 Resuming from checkpoint: {opt.resume}")
-        checkpoint = torch.load(opt.resume, map_location=device)
+        checkpoint = torch.load(opt.resume, map_location=device, weights_only=False)
         model.load_state_dict(checkpoint['model'])
         optimizer.load_state_dict(checkpoint['optimizer'])
         start_epoch = checkpoint['epoch'] + 1

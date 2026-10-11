@@ -106,6 +106,55 @@ To generate loss decay and IoU progression graphs for reports, pipe your termina
 python plot_metrics.py
 ```
 
-## 📈 Baseline Results
+## ☁️ AWS Cloud GPU Training (100 Epochs)
 
-On a localized, CPU-bound 20-epoch training run (sampling 12,000 unique patches total), the refactored architecture achieved a **Test mIoU of 0.6402** on the Potsdam hold-out set, confirming the mathematical integrity and rapid convergence capabilities of the S-GDA and Haar Enhancement modules.
+Training 100 epochs on a local CPU takes ~12–14 hours (~8.5 min/epoch). On an AWS EC2 GPU instance (e.g., `g5.xlarge` with NVIDIA A10G or `g4dn.xlarge` with NVIDIA T4), 100 epochs complete in **~20–25 minutes**.
+
+### 1. Launch AWS Instance
+- **Instance Type**: `g5.xlarge` (4 vCPUs, 16 GiB RAM, 1x NVIDIA A10G 24GB VRAM) or `g4dn.xlarge` (1x NVIDIA T4 16GB)
+- **AMI**: `Deep Learning OSS Nvidia Driver AMI GPU PyTorch 2.x (Ubuntu 22.04)`
+
+### 2. One-Click Deployment (from Local Machine)
+Run the included deployment script from PowerShell:
+```powershell
+.\deploy_to_aws.ps1 -PublicIp "<YOUR-EC2-PUBLIC-IP>" -KeyPath "path\to\your-key.pem"
+```
+*(Add `-UploadData` if you need to transfer the local `data/potsdam` dataset directly via SCP).*
+
+### 3. Running Directly on EC2
+Alternatively, inside the EC2 terminal:
+```bash
+# Setup environment
+bash setup_aws_env.sh
+
+# Run 100-Epoch Pipeline (Train -> Evaluate -> Plot)
+bash run_duhanet_100ep.sh
+```
+*To resume from the 20-epoch checkpoint instead of scratch:*
+```bash
+bash run_duhanet_100ep.sh --resume ./output/DUHANet_potsdam_best.pth
+```
+
+## 📈 Experimental Progression & Benchmark Results
+
+| Protocol / Model | Epochs | Compute Target | Sampling Strategy | Val IoU (Peak) | Test mIoU | Status / Key Insight |
+| :--- | :---: | :---: | :---: | :---: | :---: | :--- |
+| **Potsdam Baseline (CPU)** | 20 | Local CPU (~8.5m/ep) | 25 patches / image (600/ep) | **0.9793** (Ep 16) | **0.6685** | Initial proof of concept. Confirmed S-GDA convergence. |
+| **DUHA-Net 100-Epoch (AWS)** | 100 | AWS EC2 A10G / T4 GPU | 25 patches / image | *In Progress* | *Targeting >0.70+* | Full convergence with LR decay at ep 45 & 90. |
+
+### Per-Class Test Performance (20-Epoch Baseline Checkpoint):
+```text
++-------------------+---------+
+| Class             | IoU (%) |
++-------------------+---------+
+| Impervious        | 78.64%  |
+| Building          | 75.31%  |
+| Low Veg           | 65.18%  |
+| Tree              | 64.92%  |
+| Car               | 58.20%  |
+| Background        | 58.85%  |
+| ---               | ---     |
+| Mean IoU (mIoU)   | 66.85%  |
+| Overall Pixel Acc | 84.12%  |
++-------------------+---------+
+```

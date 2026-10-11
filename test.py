@@ -68,8 +68,22 @@ def main():
     
     Eva, all_labels, all_preds = test_duhanet(test_loader, model, device)
     
-    # Print results... (rest of the formatting remains same as your original)
-    print(f"\nFinal Test mIoU: {Eva.Mean_Intersection_over_Union():.4f}")
+    class_ious = Eva.Intersection_over_Union()
+    miou = Eva.Mean_Intersection_over_Union()
+    pixel_acc = Eva.Pixel_Accuracy()
+    
+    table = prettytable.PrettyTable(['Class', 'IoU (%)'])
+    for name, iou in zip(CLASS_NAMES, class_ious):
+        table.add_row([name, f"{iou * 100:.2f}%"])
+    table.add_row(['---', '---'])
+    table.add_row(['Mean IoU (mIoU)', f"{miou * 100:.2f}%"])
+    table.add_row(['Overall Pixel Acc', f"{pixel_acc * 100:.2f}%"])
+    
+    print("\n" + "=" * 45)
+    print("       DUHA-NET TEST BENCHMARK RESULTS")
+    print("=" * 45)
+    print(table)
+    print(f"\nFinal Test mIoU: {miou:.4f} ({miou * 100:.2f}%)\n")
 
 if __name__ == '__main__':
     main()

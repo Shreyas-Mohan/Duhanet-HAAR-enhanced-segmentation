@@ -39,4 +39,6 @@ def plot_training_graphs(log_file):
     print("Graph successfully saved as 'training_graphs.png'!")
 
 if __name__ == '__main__':
-    plot_training_graphs('training_log.txt')
+    import sys
+    log_name = sys.argv[1] if len(sys.argv) > 1 else 'training_log.txt'
+    plot_training_graphs(log_name)
