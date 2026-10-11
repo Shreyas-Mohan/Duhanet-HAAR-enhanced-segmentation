@@ -57,8 +57,16 @@ scp -i $KeyPath train.py test.py save_predictions.py verify_pipeline.py run_duha
 scp -i $KeyPath -r model utils visualization "$SshUser@$PublicIp`:$RemoteDir/"
 
 if ($UploadData) {
-    Write-Host "`n[Data Upload] Uploading data/potsdam to EC2 (this may take several minutes)..." -ForegroundColor Yellow
-    scp -i $KeyPath -r data/potsdam "$SshUser@$PublicIp`:$RemoteDir/data/"
+    Write-Host "`n[Data Upload] Uploading compressed potsdam.tar.gz (2.91 GB) to EC2..." -ForegroundColor Yellow
+    if (Test-Path "potsdam.tar.gz") {
+        scp -i $KeyPath potsdam.tar.gz "$SshUser@$PublicIp`:$RemoteDir/"
+        Write-Host "Extracting dataset on EC2..." -ForegroundColor Yellow
+        ssh -i $KeyPath "$SshUser@$PublicIp" "tar -xzf $RemoteDir/potsdam.tar.gz -C $RemoteDir/data && rm -f $RemoteDir/potsdam.tar.gz"
+        Write-Host " Dataset successfully unpacked on EC2!" -ForegroundColor Green
+    } else {
+        Write-Warning "potsdam.tar.gz not found, falling back to folder transfer..."
+        scp -i $KeyPath -r data/potsdam "$SshUser@$PublicIp`:$RemoteDir/data/"
+    }
 } else {
     Write-Host "`n[Note] Skipping dataset upload (-UploadData flag not provided). Ensure data/potsdam exists on EC2." -ForegroundColor Gray
 }
