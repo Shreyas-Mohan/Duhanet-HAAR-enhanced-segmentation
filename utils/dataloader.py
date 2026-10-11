@@ -1,9 +1,11 @@
 import os
+os.environ["OPENCV_LOG_LEVEL"] = "OFF"
 import random
 import torch
 import torch.utils.data as data
 import numpy as np
 import cv2
+cv2.setLogLevel(0)
 from typing import List, Tuple, Dict, Optional, Mapping
 
 def fast_mask_to_label(mask_np: np.ndarray, palette: List[List[int]]) -> np.ndarray:

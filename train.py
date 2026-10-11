@@ -1,4 +1,9 @@
 import os
+os.environ["OPENCV_LOG_LEVEL"] = "OFF"
+import warnings
+warnings.filterwarnings("ignore")
+import cv2
+cv2.setLogLevel(0)
 import argparse
 import numpy as np
 import torch
