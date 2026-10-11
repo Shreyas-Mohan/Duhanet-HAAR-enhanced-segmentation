@@ -10,4 +10,5 @@ __pycache__/
 *.tar.gz
 *.log
 *.tif
-*.tiff
+*.tiff
+duhanet-aws.pem

@@ -3,7 +3,10 @@ os.environ["OPENCV_LOG_LEVEL"] = "OFF"
 import warnings
 warnings.filterwarnings("ignore")
 import cv2
-cv2.setLogLevel(0)
+try:
+    cv2.setLogLevel(0)
+except Exception:
+    pass
 import argparse
 import numpy as np
 import torch

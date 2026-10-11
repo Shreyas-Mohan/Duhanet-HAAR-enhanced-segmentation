@@ -5,7 +5,10 @@ import torch
 import torch.utils.data as data
 import numpy as np
 import cv2
-cv2.setLogLevel(0)
+try:
+    cv2.setLogLevel(0)
+except Exception:
+    pass
 from typing import List, Tuple, Dict, Optional, Mapping
 
 def fast_mask_to_label(mask_np: np.ndarray, palette: List[List[int]]) -> np.ndarray:
